@@ -27,6 +27,7 @@ private:
     Node* right;
     int height;
 
+    Node();
     Node(const Napi::Value&);
 
     void fixHeight();
@@ -45,8 +46,9 @@ private:
 
   Node* add(Node*, const Napi::Value&);
   Napi::Value get(Node*, const Napi::Value&);
+  Napi::Value get_r(Node*, const Napi::Value&);
   Node* remove(Node*, const Napi::Value&);
-  void forEach(Node*, const Napi::Function&);
+  void forEach(Node*, const Napi::Function&, const int);
   void destroy(Node*);
 
   Node* root;

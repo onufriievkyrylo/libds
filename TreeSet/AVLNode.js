@@ -20,22 +20,22 @@ class AVLNode {
   get max() {
     return this.right ? this.right.max : this
   }
-  add(value) {
-    if (this.value.compareTo(value) > 0) {
-      this.left = this.left ? this.left.add(value) : new AVLNode(value)
-    } else if (this.value.compareTo(value) < 0) {
-      this.right = this.right ? this.right.add(value) : new AVLNode(value)
+  add(value, comparator) {
+    if (comparator(this.value, value) > 0) {
+      this.left = this.left ? this.left.add(value, comparator) : new AVLNode(value)
+    } else if (comparator(this.value, value) < 0) {
+      this.right = this.right ? this.right.add(value, comparator) : new AVLNode(value)
     } else {
       this.value = value
       return this
     }
     return this.balance()
   }
-  remove(value) {
-    if (this.value.compareTo(value) > 0) {
-      this.left = this.left ? this.left.remove(value) : null
-    } else if (this.value.compareTo(value) < 0) {
-      this.right = this.right ? this.right.remove(value) : null
+  remove(value, comparator) {
+    if (comparator(this.value, value) > 0) {
+      this.left = this.left ? this.left.remove(value, comparator) : null
+    } else if (comparator(this.value, value) < 0) {
+      this.right = this.right ? this.right.remove(value, comparator) : null
     } else {
       if (!this.right) {
         return this.left
@@ -47,20 +47,20 @@ class AVLNode {
     }
     return this.balance()
   }
-  get(value) {
-    if (this.value.compareTo(value) > 0) {
-      return this.left ? this.left.get(value) : null
-    } else if (this.value.compareTo(value) < 0) {
-      return this.right ? this.right.get(value) : null
+  get(value, comparator) {
+    if (comparator(this.value, value) > 0) {
+      return this.left ? this.left.get(value, comparator) : null
+    } else if (comparator(this.value, value) < 0) {
+      return this.right ? this.right.get(value, comparator) : null
     } else {
       return this
     }
   }
-  includes(value) {
-    if (this.value.compareTo(value) > 0) {
-      return this.left ? this.left.includes(value) : false
-    } else if (this.value.compareTo(value) < 0) {
-      return this.right ? this.right.includes(value) : false
+  includes(value, comparator) {
+    if (comparator(this.value, value) > 0) {
+      return this.left ? this.left.includes(value, comparator) : false
+    } else if (comparator(this.value, value) < 0) {
+      return this.right ? this.right.includes(value, comparator) : false
     } else {
       return true
     }
@@ -119,7 +119,7 @@ class AVLNode {
     temp.fixHeight()
     return temp
   }
-  rotateRight() {
+  rotateLeft() {
     const temp = this.right
     this.right = temp.left
     temp.left = this
@@ -129,4 +129,4 @@ class AVLNode {
   }
 }
 
-module.export = AVLNode
+module.exports = AVLNode

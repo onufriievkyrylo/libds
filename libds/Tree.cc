@@ -22,6 +22,9 @@ Napi::Object Tree::Init(Napi::Env& env, Napi::Object exports) {
   return exports;
 }
 
+Tree::Node::Node() : Tree::Node::Node(Napi::Value()) {
+}
+
 Tree::Node::Node(const Napi::Value& value) : value(Napi::Persistent(value)), left(nullptr), right(nullptr), height(1) {
 }
 
@@ -130,8 +133,32 @@ Napi::Value Tree::get(Tree::Node* root, const Napi::Value& value) {
   }
 }
 
+Napi::Value Tree::get_r(Tree::Node* root, const Napi::Value& value) {
+  int compare = 0;
+  while (root) {
+    compare = this->comparator({ value, root->value.Value() }).ToNumber();
+    if (compare > 0) {
+      root = root->right;
+    } else if (compare < 0) {
+      root = root->left;
+    } else {
+      return root->value.Value();
+    }
+  }
+  return Napi::Value();
+
+  // if (!root) return Napi::Value();
+  // int compare = this->comparator({ value, root->value.Value() }).ToNumber();
+  // if (compare > 0) {
+  //   return this->get(root->right, value);
+  // } else if (compare < 0) {
+  //   return this->get(root->left, value);
+  // } else {
+  //   return root->value.Value();
+  // }
+}
+
 Tree::Node* Tree::remove(Tree::Node* root, const Napi::Value& value) {
-  if (!root) return nullptr;
   int compare = this->comparator({ value, root->value.Value() }).ToNumber();
   if (compare > 0) {
     root->right = this->remove(root->right, value);
@@ -148,13 +175,13 @@ Tree::Node* Tree::remove(Tree::Node* root, const Napi::Value& value) {
   return root->balance();
 }
 
-void Tree::forEach(Tree::Node* root, const Napi::Function& cb) {
+void Tree::forEach(Tree::Node* root, const Napi::Function& cb, const int level = 1) {
   if (root->left) {
-    this->forEach(root->left, cb);
+    this->forEach(root->left, cb, level + 1);
   }
-  cb({ root->value.Value() });
+  cb({ root->value.Value(), Napi::Number::New(cb.Env(), level) });
   if (root->right) {
-    this->forEach(root->right, cb);
+    this->forEach(root->right, cb, level + 1);
   }
 }
 
@@ -173,7 +200,7 @@ Napi::Value Tree::_get(const Napi::CallbackInfo& info) {
   if (length <= 0 || !info[0].IsObject()) {
     Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
   }
-  const Napi::Value value = this->get(this->root, info[0].ToObject());
+  const Napi::Value value = this->get_r(this->root, info[0].ToObject());
   return value.IsEmpty() ? env.Undefined() : value;
 }
 
