@@ -1,43 +1,23 @@
-const addon = require('bindings')('addon');
-const TreeSet = require('./TreeSet/TreeSet')
 
-console.time('C++ constructor')
-const tree = new addon.Tree((a, b) => {
-  return a.n > b.n ? 1 : a.n < b.n ? -1 : 0;
-})
-console.timeEnd('C++ constructor')
+const {AVLTreeSet} = require('./lib/Set')
 
-console.time('JS constructor')
-const set = new TreeSet((a, b) => {
-  return a.n > b.n ? 1 : a.n < b.n ? -1 : 0;
-})
-console.timeEnd('JS constructor')
-
-const obj = {
-  kharkiv: { secret: '123' }
+class C {
+  constructor(data) {
+    this.data = data
+  }
+  compareTo(value) {
+    return this.data > value.data ? 1 : this.data < value.data ? -1 : 0
+  }
 }
 
-let count = 200000;
-console.time('JS add')
-for (let i = 0 ; i < count; ++i) {
-  set.add({ string: 'STRING', n: Math.random() * 1000000 })
-}
-console.timeEnd('JS add')
+const tree = new AVLTreeSet();
 
-console.time('c++ add')
-for (let i = 0 ; i < count; ++i) {
-  tree.add({ string: 'STRING', n: Math.random() * 1000000 })
-}
-console.timeEnd('c++ add')
+tree.add(new C(1))
+tree.add(new C(0))
+tree.add(new C(4))
+tree.add(new C(3))
+tree.add(new C(2))
 
-let f = Math.random() * 1000000;
+console.log(tree.get(value => value.data > 3 ? 1 : value.data < 3 ? -1 : 0))
 
-console.time('C++ get')
-console.log(tree.get({ n: f }))
-console.timeEnd('C++ get')
-
-console.time('JS set get')
-console.log(set.get({ n: f }))
-console.timeEnd('JS set get')
-
-//tree.forEach((a, level) => console.log(a, level));
+//tree.forEach(console.log)

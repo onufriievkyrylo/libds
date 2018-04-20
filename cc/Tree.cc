@@ -200,7 +200,7 @@ Napi::Value Tree::_get(const Napi::CallbackInfo& info) {
   if (length <= 0 || !info[0].IsObject()) {
     Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
   }
-  const Napi::Value value = this->get_r(this->root, info[0].ToObject());
+  const Napi::Value value = this->get(this->root, info[0].ToObject());
   return value.IsEmpty() ? env.Undefined() : value;
 }
 
