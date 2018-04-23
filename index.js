@@ -1,5 +1,5 @@
 
-const {AVLTreeSet} = require('./lib/Set')
+const {RBTreeNode} = require('./lib/Set/Nodes/RBTreeNode')
 
 class C {
   constructor(data) {
@@ -10,14 +10,17 @@ class C {
   }
 }
 
-const tree = new AVLTreeSet();
+let root = new RBTreeNode(new C(10));
 
-tree.add(new C(1))
-tree.add(new C(0))
-tree.add(new C(4))
-tree.add(new C(3))
-tree.add(new C(2))
+console.log('#20')
+root.add(new C(20))
+console.log('#30')
+root = root.add(new C(30))
+console.log('#40')
+root = root.add(new C(40))
+// console.log('#4')
+// root = root.add(new C(-2))
 
-console.log(tree.get(value => value.data > 3 ? 1 : value.data < 3 ? -1 : 0))
-
-//tree.forEach(console.log)
+root.forEach((node, level) => {
+  console.log('::'.repeat(level), node.value.data, node.color ? 'BLACK' : 'RED')
+})

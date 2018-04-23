@@ -1,6 +1,6 @@
 import { Comparable } from '../helpers/Comparable'
 import { Set } from '../Set'
-import { AVLNode as Node } from './Nodes/AVLTreeSetNode'
+import { AVLTreeNode as Node } from './Nodes/AVLTreeNode'
 
 
 export class AVLTreeSet<T extends Comparable<T>> implements Set<T> {

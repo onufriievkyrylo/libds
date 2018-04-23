@@ -1,24 +1,28 @@
 import { Comparable } from '../../helpers/Comparable'
 
-export abstract class TreeSetNode <T extends Comparable<T>> {
-  protected abstract left: TreeSetNode<T>
-  protected abstract right: TreeSetNode<T>
+export abstract class AbstractTreeNode <K extends Comparable<K>, V> {
+  protected abstract left: AbstractTreeNode<K, V>
+  protected abstract right: AbstractTreeNode<K, V>
  
-  abstract add(value: T)
-  abstract remove(value: T)
+  abstract add(key: K, value: V)
+  abstract remove(key: K)
 
-  value: T
+  key: K
+  value: V
 
-  constructor(value: T) {
+  constructor(key: K, value: V) {
+    this.key = key
     this.value = value
   }
 
-  get(wanted: any): TreeSetNode<T> {
+  get(key: K)
+  get(comparator: (key: K) => number)
+  get(wanted: any): AbstractTreeNode<K, V> {
     let comparation: number = 0
     if (typeof wanted === 'function') {
-      comparation = wanted(this.value)
+      comparation = wanted(this.key)
     } else {
-      comparation = this.value.compareTo(wanted)
+      comparation = this.key.compareTo(wanted)
     }
     if (comparation > 0) {
       return this.left ? this.left.get(wanted) : null
@@ -28,16 +32,26 @@ export abstract class TreeSetNode <T extends Comparable<T>> {
       return this
     }
   }
-  includes(value: T): boolean {
-    if (this.value.compareTo(value) > 0) {
-      return this.left ? this.left.includes(value) : false
-    } else if (this.value.compareTo(value) < 0) {
-      return this.right ? this.right.includes(value) : false
+  includes(key: K): boolean {
+    if (this.key.compareTo(key) > 0) {
+      return this.left ? this.left.includes(key) : false
+    } else if (this.key.compareTo(key) < 0) {
+      return this.right ? this.right.includes(key) : false
     } else {
       return true
     }
   }
-  values(values: Array<T>): Array<T> {
+  keys(keys: Array<K>): Array<K> {
+    if (this.left) {
+      keys = this.left.keys(keys)
+    }
+    keys.push(this.key)
+    if (this.right) {
+      keys = this.right.keys(keys)
+    }
+    return keys
+  }
+  values(values: Array<V>): Array<V> {
     if (this.left) {
       values = this.left.values(values)
     }
@@ -57,11 +71,11 @@ export abstract class TreeSetNode <T extends Comparable<T>> {
   get max() {
     return this.right ? this.right.max : this
   }
-  forEach(calllback: (value: T) => void): void {
+  forEach(calllback: (key: K, value: V) => void): void {
     if (this.left) {
       this.left.forEach(calllback)
     }
-    calllback(this.value)
+    calllback(this.key, this.value)
     if (this.right) {
       this.right.forEach(calllback)
     }

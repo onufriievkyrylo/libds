@@ -1,9 +1,9 @@
-import { TreeSetNode } from './TreeSetNode'
+import { AbstractTreeNode } from './AbstractTreeNode'
 import { Comparable } from '../../helpers/Comparable'
 
-export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
-  protected left: AVLNode<T>
-  protected right: AVLNode<T>
+export class AVLTreeNode<T extends Comparable<T>> extends AbstractTreeNode<T> {
+  protected left: AVLTreeNode<T>
+  protected right: AVLTreeNode<T>
   private height: number
   
   constructor(value: T) {
@@ -13,25 +13,25 @@ export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
     this.height = 1
   }
 
-  static height(node: AVLNode<any>): number  {
+  static height(node: AVLTreeNode<any>): number  {
     return node ? node.height : 0
   }
   get factor(): number {
-    return AVLNode.height(this.right) - AVLNode.height(this.left)
+    return AVLTreeNode.height(this.right) - AVLTreeNode.height(this.left)
   }
 
-  add(value: T): AVLNode<T> {
+  add(value: T): AVLTreeNode<T> {
     if (this.value.compareTo(value) > 0) {
-      this.left = this.left ? this.left.add(value) : new AVLNode(value)
+      this.left = this.left ? this.left.add(value) : new AVLTreeNode(value)
     } else if (this.value.compareTo(value) < 0) {
-      this.right = this.right ? this.right.add(value) : new AVLNode(value)
+      this.right = this.right ? this.right.add(value) : new AVLTreeNode(value)
     } else {
       this.value = value
       return this
     }
     return this.balance()
   }
-  remove(value: T): AVLNode<T> {
+  remove(value: T): AVLTreeNode<T> {
     if (this.value.compareTo(value) > 0) {
       this.left = this.left ? this.left.remove(value) : null
     } else if (this.value.compareTo(value) < 0) {
@@ -40,7 +40,7 @@ export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
       if (!this.right) {
         return this.left
       }
-      const temp: AVLNode<T> = this.right.min
+      const temp: AVLTreeNode<T> = this.right.min
       temp.right = this.right.shift()
       temp.left = this.left
       return temp.balance()
@@ -49,19 +49,19 @@ export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
   }
 
 
-  shift(): AVLNode<T>  {
+  shift(): AVLTreeNode<T>  {
     this.left = this.left ? this.left.shift() : this.right
     return this.balance()
   }
-  pop(): AVLNode<T> {
+  pop(): AVLTreeNode<T> {
     this.right = this.right ? this.right.pop() : this.left
     return this.balance()
   }
 
   private fixHeight(): void {
-    this.height = Math.max(AVLNode.height(this.right), AVLNode.height(this.left)) + 1
+    this.height = Math.max(AVLTreeNode.height(this.right), AVLTreeNode.height(this.left)) + 1
   }
-  private balance(): AVLNode<T> {
+  private balance(): AVLTreeNode<T> {
     this.fixHeight()
     if (this.factor == 2) {
       if (this.right.factor < 0) {
@@ -77,7 +77,7 @@ export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
     }
     return this
   }
-  private rotateRight(): AVLNode<T> {
+  private rotateRight(): AVLTreeNode<T> {
     const temp = this.left
     this.left = temp.right
     temp.right = this
@@ -85,7 +85,7 @@ export class AVLNode<T extends Comparable<T>> extends TreeSetNode<T> {
     temp.fixHeight()
     return temp
   }
-  private rotateLeft(): AVLNode<T> {
+  private rotateLeft(): AVLTreeNode<T> {
     const temp = this.right
     this.right = temp.left
     temp.left = this
